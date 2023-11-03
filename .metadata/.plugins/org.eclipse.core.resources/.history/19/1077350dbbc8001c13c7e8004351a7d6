@@ -1,0 +1,43 @@
+package ro.ase.ism.sap;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+public class TestCollections {
+
+	public static void main(String[] args) {
+		//lists
+		ArrayList<Integer> values = new ArrayList<>();
+		values.add(10);
+		values.add(9);
+		values.add(23);
+		values.add(10);
+		
+		int number = 324;
+		String numberText = new Integer(number).toString();
+		System.out.println(numberText);
+		numberText = number + "";
+		System.out.println(numberText);
+		
+		System.out.println("The list is: ");
+		for(int value: values) {
+			System.out.println(" "+value);
+		}
+		
+		
+		//sets
+		HashSet<Integer> uniqueValues = new HashSet<>();
+		uniqueValues.add(10);
+		uniqueValues.add(9);
+		uniqueValues.add(23);
+		uniqueValues.add(10);
+		
+		System.out.println("The list is: ");
+		for(int value: uniqueValues) {
+			System.out.println(" "+value);
+		}
+		
+		//maps - dictionary
+	}
+
+}

@@ -1,0 +1,17 @@
+package ro.ase.ism.sap;
+
+public class TestClasses {
+
+	public static void main(String[] args) {
+	String fileName1 = "mysecretmsg.enc";
+	byte[] byteRepresentation = fileName1.getBytes();
+	//String are immutable
+	fileName1 = "newFile.txt"; //creating a new String object
+	String fileName2 = "newFile.txt";
+	if(fileName1 == fileName2) {
+		System.out.println("They are equal!");
+	}else System.out.println("They are different!");
+	
+	}
+
+}

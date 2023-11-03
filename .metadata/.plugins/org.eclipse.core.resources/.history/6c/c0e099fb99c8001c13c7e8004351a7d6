@@ -1,0 +1,41 @@
+package ro.ase.ism.sap;
+
+import java.io.FileNotFoundException;
+
+public class TestExceptions {
+
+		public static void generateException(int number) throws SmallIntException, FileNotFoundException {
+			if(number<Byte.MAX_VALUE)
+				throw new SmallIntException();
+			if(number==200)
+				throw new FileNotFoundException();
+		}
+	
+	
+	
+	public static void main(String[] args){
+		System.out.println("Start...");
+		//throw an exception:
+		try {
+			generateException(100);
+		} catch (SmallIntException e) {
+			System.out.println("The number was a small one");
+			e.printStackTrace();
+		} catch(Exception ex) {
+			System.out.println("Another error " + ex.getMessage());
+		}
+		
+		System.out.println("The end");
+
+	}
+
+}
+
+
+class SmallIntException extends Exception{
+	public SmallIntException(String msg) {
+	super(msg);
+	}
+	public SmallIntException() {
+	}
+}

@@ -1,0 +1,11 @@
+package ro.ase.ism.sap;
+
+public class TestEnums {
+
+	
+	
+	public static void main(String[] args) {
+		
+	}
+
+}

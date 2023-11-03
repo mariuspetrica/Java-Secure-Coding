@@ -1,0 +1,17 @@
+package ro.ase.ism.sap;
+
+public class TestEnums {
+
+	enum AlgorithmNames{AES,DES,DESede,RC5}
+	
+	public static void main(String[] args) {
+		
+		AlgorithmNames alg = AlgorithmNames.DES;
+		System.out.println("Algorithm name is " + alg);
+		
+		
+		
+		
+	}
+
+}

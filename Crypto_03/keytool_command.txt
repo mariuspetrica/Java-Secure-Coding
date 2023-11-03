@@ -1,0 +1,8 @@
+keytool.exe -genkey -keyalg RSA -alias ismkey1 -keypass passism1 -storepass passks -keystore ismkeystore.ks -dname "cn=Catalin Boja, ou=ISM, o=IT&C Security Master, c=RO"
+
+keytool.exe -genkey -keyalg RSA -alias ismkey2 -keypass passism2 -storepass passks -keystore ismkeystore.ks -dname "cn=Catalin Boja, ou=ISM, o=IT&C Security Master, c=RO"
+
+keytool.exe -export -alias ismkey1 -file ISMKey1CertificateX509.cer -keystore ismkeystore.ks -storepass passks
+
+keytool -importcert -file ism_x509_certificate.cer -keystore ismkeystore.ks -alias "webstudent" -storepass passks
+

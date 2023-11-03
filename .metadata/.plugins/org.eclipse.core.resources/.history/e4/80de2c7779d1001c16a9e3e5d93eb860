@@ -1,0 +1,32 @@
+package ro.ase.ism.sap;
+
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+public class TestCrypto {
+
+	public static void main(String[] args) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException, InvalidAlgorithmParameterException {
+		System.out.println("Starting ENCRYPT...");
+		SymCipher.encryptECB("message.txt", "password", "message.enc","DES");
+		System.out.println("ENCRYPT ECB -> That's it!");
+	//message.txt size is 25bytes so it has padding to reach 32 bytes(the size of the .enc file)
+		System.out.println("Starting DECRYPT ECB...");
+		SymCipher.decryptECB("message.enc", "password", "decryptedmessage.txt","DES");
+		System.out.println("DECRYPT -> That's it!");
+	
+		System.out.println("Starting ENCRYPT CBC ...");
+		SymCipher.encryptCBC("message.txt", "password12345678", "messageCBC.enc", "AES");
+		System.out.println("ENCRYPT CBC -> That's it!");
+		
+		System.out.println("Starting DECRYPT CBC ...");
+		SymCipher.decryptCBC("messageCBC.enc", "password12345678", "decryptedCBCmessage.txt", "AES");
+		System.out.println("DECRYPT CBC -> That's it!");
+	}
+
+}

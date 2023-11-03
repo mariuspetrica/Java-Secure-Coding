@@ -1,0 +1,287 @@
+package ro.ase.ism.sap;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.rmi.UnexpectedException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.KeySpec;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
+public class exam {
+
+	public static void printHex(byte[] values, String description) {
+		System.out.println("\nHex value for: " + description);
+		for(byte value : values) {
+			System.out.printf("%02x",value);
+		}
+	}
+	
+	private static SecretKey generateKeyFromPassword(String password) throws Exception {
+		byte[] passwordBytes = password.getBytes();
+		SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+		KeySpec keySpec = new PBEKeySpec(password.toCharArray(), passwordBytes, 65536, 256);
+		SecretKey secretKey = keyFactory.generateSecret(keySpec);
+        return new SecretKeySpec(secretKey.getEncoded(), "AES");
+}
+	
+	public static void encryptCBC(
+			String inputFile, String key, String algorithm, String cipherFile) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+		
+		File input = new File(inputFile);
+		if(!input.exists()) {
+			throw new FileNotFoundException();
+		}
+		
+		FileInputStream fis = new FileInputStream(input);
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		
+		File output = new File(cipherFile);
+		if(!output.exists()) {
+			output.createNewFile();
+		}
+		
+		FileOutputStream fos = new FileOutputStream(output);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		
+		Cipher cipher = Cipher.getInstance(algorithm + "/CBC/PKCS5Padding");
+		SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), algorithm);
+		
+		//generate a new random IV for each encryption
+		SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+		byte[] IV = secureRandom.getSeed(cipher.getBlockSize());
+		
+		IvParameterSpec ivParameterSpec = new IvParameterSpec(IV);
+		cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
+		
+		//write IV in the cipher file
+		//bos.write(IV);
+		
+		byte[] buffer = new byte[cipher.getBlockSize()];
+		int noBytes = 0;
+		byte[] cipherBuffer;
+		
+		while(noBytes != -1) {
+			noBytes = bis.read(buffer);
+			if(noBytes != -1) {
+				cipherBuffer = cipher.update(buffer, 0, noBytes);
+				bos.write(cipherBuffer);
+			}
+		}
+		cipherBuffer = cipher.doFinal();
+		bos.write(cipherBuffer);
+		
+		fis.close();
+		bos.close();	
+	}
+	
+	
+	public static PublicKey getCertificatePublicKey(String cerFileName) throws CertificateException, IOException {
+		File cerFile = new File(cerFileName);
+		if(!cerFile.exists()) {
+			System.out.println("Certificate not found!");
+			throw new FileNotFoundException();
+		}
+		
+		FileInputStream fis = new FileInputStream(cerFile);
+		
+		CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+		X509Certificate certificate = (X509Certificate) certFactory.generateCertificate(fis);
+		
+		fis.close();
+		return certificate.getPublicKey();
+	}
+
+	
+	public static KeyStore getKeyStore(String keyStoreFile, String keyStorePass, String type) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
+		File ksFile = new File(keyStoreFile);
+		if(!ksFile.exists()) {
+			System.out.println("File not found!");
+			throw new FileNotFoundException();
+		}
+		FileInputStream fis = new FileInputStream(ksFile);
+		
+		KeyStore ks = KeyStore.getInstance(type);
+
+		ks.load(fis, keyStorePass.toCharArray());
+		fis.close();
+		
+		
+		return ks;
+		
+	}
+	
+	public static PrivateKey getPrivateKey(KeyStore ks, String entryAlias,String keyPass) throws UnexpectedException, UnrecoverableKeyException, KeyStoreException, NoSuchAlgorithmException {
+		if(ks==null) {
+			System.out.println("No key Store available!");
+			throw new UnexpectedException("No keystore!");
+		}
+		
+		if(ks.containsAlias(entryAlias)) {
+			return (PrivateKey) ks.getKey(entryAlias,keyPass.toCharArray());
+		}else {
+			return null;
+		}
+	}
+
+	public static byte[] genDigitalSignature(String fileName, PrivateKey privKey)
+			throws NoSuchAlgorithmException, InvalidKeyException, IOException, SignatureException {
+
+		Signature signature = Signature.getInstance("SHA512withRSA");
+		signature.initSign(privKey);
+
+		File file = new File(fileName);
+		if (!file.exists()) {
+			throw new FileNotFoundException();
+		}
+
+		FileInputStream fis = new FileInputStream(file);
+
+		// suppose the file is small and we ca read it at once
+		byte[] fileContent = fis.readAllBytes();
+		signature.update(fileContent);
+		byte[] signValue = signature.sign();
+
+		return signValue;
+	}
+	
+	public static void storeData(String filename, byte[] values) throws IOException {
+		File file = new File(filename);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.write(values);
+
+		fos.close();
+	}
+	
+	
+	
+public static boolean ValidSignature(String fileName, PublicKey pubKey, String signatureFile) throws InvalidKeyException, NoSuchAlgorithmException, IOException, SignatureException {
+		
+		Signature signature = Signature.getInstance("SHA512withRSA");
+		signature.initVerify(pubKey);;
+		
+		File file = new File(fileName);
+		if(!file.exists()) {
+			System.out.println("File is missing!");
+			throw new FileNotFoundException();
+		}
+		FileInputStream fis = new FileInputStream(file);
+		
+		
+		File fileSign = new File(signatureFile);
+		if(!file.exists()) {
+			System.out.println("File is missing!");
+			throw new FileNotFoundException();
+		}
+		FileInputStream fisSign= new FileInputStream(fileSign);
+		
+		
+		//let's suppose the file is small and we can read it at once:
+		byte[] fileContent = fis.readAllBytes();
+		
+		byte[] digitalSignature = fisSign.readAllBytes();
+		signature.update(fileContent);
+		fis.close();
+		fisSign.close();
+		
+		return signature.verify(digitalSignature);
+		
+	}
+
+
+	public static void main(String[] args) throws Exception {
+	
+
+        String inputFilePath  = "msg.txt";
+        String outputFilePath = "enc_msg.aes"; // encrypted file
+	
+		File inputMessage = new File("msg.txt");
+		if(!inputMessage.exists()) {
+			System.out.println("The input file is missing!*******************");
+		}else {
+			FileReader reader = new FileReader(inputMessage);
+			BufferedReader bReader = new BufferedReader(reader);
+		
+		String line="";
+		while(line !=null) {
+			line=bReader.readLine();
+			if(line!=null) {
+				
+		//HASHING sha256
+			MessageDigest messageDigestMd5 = MessageDigest.getInstance("SHA-256");
+			messageDigestMd5.update(line.getBytes());
+			byte[] SHA256 = messageDigestMd5.digest();
+			System.out.println("SHA256 value for msg.txt is: ");
+			printHex(SHA256,"SHA256 VALUE");
+				} 
+			}
+		String password = "passwordsecurity";
+		
+		Path inputFile = Path.of(inputFilePath);
+		byte[] inputBytes = Files.readAllBytes(inputFile);
+		SecretKey secretKey = generateKeyFromPassword(password);
+		Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+		
+		byte[] iv = new byte[] { 0, 0, 0, 0, 0, (byte) 0xCC, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
+		
+		byte[] encryptedBytes = cipher.doFinal(inputBytes);
+		
+		Path outputFile = Path.of(outputFilePath);
+		Files.write(outputFile, encryptedBytes);
+		
+		System.out.println("\nEncrypted file saved as: " + outputFilePath);
+
+		}
+		
+		PublicKey myPubKey = getCertificatePublicKey("ISMCertificateX509PetricaMarius.cer");
+
+		//System.out.println("My Private key: " + getHex(myPriv.getEncoded()));
+		
+		KeyStore ks = getKeyStore("ismkeystore.ks", "passks", "pkcs12");
+		PrivateKey myPriv = getPrivateKey(ks, "assignment3", "passks");
+		
+		storeData("signature_file.sign", genDigitalSignature("enc_msg.aes", myPriv));
+		System.out.println("Is signature valid? ");
+		System.out.println(ValidSignature("enc_msg.aes", myPubKey, "signature_file.sign"));
+	}
+		
+}
+
+

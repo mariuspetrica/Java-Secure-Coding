@@ -1,0 +1,52 @@
+package ro.ase.ism.sap;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class exam {
+
+	public static void printHex(byte[] values, String description) {
+		System.out.println("\nHex value for: " + description);
+		for(byte value : values) {
+			System.out.printf("%02x",value);
+		}
+	}
+	
+	
+	public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+	
+
+	
+		File inputMessage = new File("msg.txt");
+		if(!inputMessage.exists()) {
+			System.out.println("The input file is missing!*******************");
+		}else {
+			FileReader reader = new FileReader(inputMessage);
+			BufferedReader bReader = new BufferedReader(reader);
+		
+		String line="";
+		while(line !=null) {
+			line=bReader.readLine();
+			if(line!=null) {
+				
+		//HASHING sha256
+			MessageDigest messageDigestMd5 = MessageDigest.getInstance("SHA-256");
+			messageDigestMd5.update(line.getBytes());
+			byte[] SHA256 = messageDigestMd5.digest();
+			System.out.println("SHA256 value for msg.txt is: ");
+			printHex(SHA256,"SHA256 VALUE");
+			}
+			}
+		}
+	}
+
+}

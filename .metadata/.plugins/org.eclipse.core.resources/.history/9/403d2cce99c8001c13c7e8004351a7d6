@@ -1,0 +1,35 @@
+package ro.ase.ism.sap;
+
+public class TestExceptions {
+
+		public static void generateException(int number) throws SmallIntException {
+			if(number<Byte.MAX_VALUE)
+				throw new SmallIntException();
+		}
+	
+	
+	
+	public static void main(String[] args){
+		System.out.println("Start...");
+		//throw an exception:
+		try {
+			generateException(100);
+		} catch (SmallIntException e) {
+			System.out.println("The number was a small one");
+			e.printStackTrace();
+		}
+		
+		System.out.println("The end");
+
+	}
+
+}
+
+
+class SmallIntException extends Exception{
+	public SmallIntException(String msg) {
+	super(msg);
+	}
+	public SmallIntException() {
+	}
+}

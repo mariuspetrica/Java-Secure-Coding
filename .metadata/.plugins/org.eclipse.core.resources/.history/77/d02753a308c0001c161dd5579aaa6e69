@@ -1,0 +1,45 @@
+package ro.ase.ism.sap;
+
+public class Hello {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		int intValue=10;
+		System.out.println("byteValue is: "+ intValue);
+		intValue=0x14;
+		System.out.println("byteValue is: "+ intValue);
+		intValue=0b00001010;
+		System.out.println("byteValue is: "+ intValue);
+		
+		System.out.println("Hello World!");
+		byte byteValue = (byte) 0b10101010;
+		System.out.println("byteValue is: "+ byteValue);
+		byteValue = (byte) 0xAA;
+		System.out.println("byteValue is: "+ byteValue);
+		byteValue = (byte) (1<<7 | 1<<5 | 1<<3 | 1<<1);
+		System.out.println("byteValue is: "+ byteValue);
+		byteValue = (byte) (1<<4| 1<<3| 1<<2 |1<<1);
+		System.out.println("byteValue is: "+ byteValue);
+		byteValue = (byte) (1<<7);
+		System.out.println("byteValue is: "+ byteValue);
+//check bit values in a variable:
+		int JustAValue=23;
+		//check 5th bit(always from right to left) in the int value:
+		int mask = 0b0001_0000;
+		System.out.println("byteValue is: "+ byteValue);
+		//init a mask with the sign bit 1 for an integer
+		int mask2 = 0b1000_0000; //this is NOT 1000....000 over 32 bits by default, this is 0000_0000_0000_0000_0000_0000_1000_0000;
+		//how to do it properly:
+		mask2 = 1<<31;
+		System.out.println("byteValue is: "+ byteValue);
+//check the bit:
+		if((JustAValue & mask)!=0) {
+			System.out.println("The 5th bit is one!");
+		}else {
+			System.out.println("The 5th bit is not one!");
+		}
+		
+	}
+
+}

@@ -1,0 +1,42 @@
+package ro.ase.ism.sap;
+
+import java.io.File;
+
+public class TestFiles {
+
+	public static void dir(String path) {
+		
+		File location = new File(path);
+		if(location.exists()) {
+			File[] files = location.listFiles();
+			for(File file: files) {
+				
+			String description=file.isDirectory() ? "<Folder> " : "";
+			description += file.getName();
+			System.out.println(description);
+			}
+		}else {
+			System.out.println("Wrong path!");
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	public static void main(String[] args) {
+
+		dir("C:\\Users\\mariu\\ISM");
+		
+		
+		
+		
+		
+		
+		
+	}
+
+}

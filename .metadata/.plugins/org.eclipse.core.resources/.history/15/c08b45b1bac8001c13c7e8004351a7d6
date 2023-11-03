@@ -1,0 +1,35 @@
+package ro.ase.ism.sap;
+
+import java.util.ArrayList;
+
+public class TestCollections {
+
+	public static void main(String[] args) {
+		//lists
+		ArrayList<Integer> values = new ArrayList<>();
+		values.add(10);
+		values.add(9);
+		values.add(23);
+		values.add(10);
+		
+		int number = 324;
+		String numberText = new Integer(number).toString();
+		System.out.println(numberText);
+		numberText = number + "";
+		System.out.println(numberText);
+		
+		System.out.println("The list is: ");
+		for(int value: values) {
+			System.out.println(" "+value);
+		}
+		
+		
+		//sets
+		
+		
+		
+		
+		//maps - dictionary
+	}
+
+}

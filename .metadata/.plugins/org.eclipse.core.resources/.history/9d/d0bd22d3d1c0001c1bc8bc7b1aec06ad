@@ -1,0 +1,26 @@
+package ro.ase.ism.sap;
+
+public class TestClasses {
+
+	public static void main(String[] args) {
+	String fileName1 = "mysecretmsg.enc";
+	byte[] byteRepresentation = fileName1.getBytes();
+	//String are immutable
+	fileName1 = "newFile.txt"; //creating a new String object
+	String fileName2 = "newFile.txt"; //is not creating a new object but taking it from the constant pool by the Java Virtual Machine
+	String fileName3 = fileName2;
+	//is always checking addresses
+	String fileName4 = new String("newFile.txt");
+	
+	if(fileName1 == fileName2) {
+		System.out.println("They are equal!");
+	}else System.out.println("They are different!");
+	
+	if(fileName1 == fileName4) {
+		System.out.println("They are equal!");
+	}else System.out.println("They are different!");
+	
+	
+	}
+
+}

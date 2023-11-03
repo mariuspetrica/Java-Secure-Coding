@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;Util.java&apos; to &apos;Crypto_03/src/ro.ase.ism.sap&apos;&#x0D;&#x0A;- Original project: &apos;Crypto_01&apos;&#x0D;&#x0A;- Destination element: &apos;Crypto_03/src/ro.ase.ism.sap&apos;&#x0D;&#x0A;- Original element: &apos;ro.ase.ism.sap.Util.java&apos;" description="Copy compilation unit" destination="=Crypto_03/src&lt;ro.ase.ism.sap" element1="/src&lt;ro.ase.ism.sap{Util.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1652692015630" units="1" version="1.0"/>
+</session>
